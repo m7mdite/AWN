@@ -1,0 +1,120 @@
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
+
+import '../../controllers/public_controllers/unified_setting_controller.dart';
+import '../../controllers/student_controllers/student_requests_controller.dart';
+import '../../controllers/theme_controller.dart';
+import '../../utils/app_constants/app_theme_constants.dart';
+import '../../utils/app_constants/colors_constant.dart';
+import '../public_views/chats/conversations_screen.dart';
+import '../public_views/notifications_view.dart';
+import '../public_views/settings/profile_screen.dart';
+import '../widgets/custom_app_bar.dart';
+import '../widgets/custom_icon_app_bar.dart';
+import '../widgets/custom_photo_app_bar.dart';
+import '../widgets/default_no_data.dart';
+import '../widgets/requests/card_request_processing.dart';
+
+class StudentRequestsScreen extends StatelessWidget {
+  final StudentRequestsControllerImp controller =
+      Get.put(StudentRequestsControllerImp());
+  final UnifiedSettingController settingController =
+      Get.find<UnifiedSettingController>();
+
+  StudentRequestsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GetBuilder<ThemeController>( 
+      builder: (_) {
+        return GetBuilder<StudentRequestsControllerImp>(
+          builder: (_) {
+            return Scaffold(
+              backgroundColor: AppColors.background, 
+              appBar: CustomAppBar(
+                title: "طلبات المعالجة",titleSize: 18,
+                automaticallyImplyLeading: false,
+                actions: [
+                  CustomIconAppBar(
+                    iconData: Icons.chat,
+                    onTap: () => Get.to(() => ConversationsScreen()),
+                  ),
+                  CustomIconAppBar(
+                    iconData: Icons.notifications,
+                    onTap: () => Get.to(() => NotificationsView()),
+                    reverseColors: true,
+                  ),
+                ],
+                leading: Obx(() {
+                  final pic = settingController.profilePicture.value;
+                  return InkWell(
+                    onTap: () => Get.to(() => ProfileScreen()),
+                    child: CustomPhotoAppBar(pic: pic),
+                  );
+                }),
+              ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerFloat,
+              floatingActionButton: InkWell(
+                onTap: () => controller.showMyRequest(),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface.withValues(alpha: 0.9), 
+                    border: Border.all(
+                        width: 1,
+                        color: AppColors.primary,
+                        strokeAlign: 10),
+                    borderRadius: AppThemeConstants.borderRadius,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.2), 
+                        blurRadius: 3,
+                        spreadRadius: 3,
+                      )
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FaIcon(FontAwesomeIcons.tooth,
+                          color: AppColors.primary), // ✅
+                      Text(
+                        "  طلباتي",
+                        style: TextStyle(color: AppColors.textPrimary), // ✅
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              body: RefreshIndicator(
+                color: AppColors.primary, // ✅
+                onRefresh: () async {
+                  controller.getPendingRequests();
+                },
+                child: controller.pendingRequests.isEmpty
+                    ? DefaultNoData()
+                    : ListView.builder(
+                        itemCount: controller.pendingRequests.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == controller.pendingRequests.length) {
+                            return const SizedBox(height: 100);
+                          }
+                          return CardRequestProcessing(
+                            requestModel: controller.pendingRequests[index],
+                            onTap: () {
+                              controller.showRequest(
+                                  controller.pendingRequests[index]);
+                            },
+                          );
+                        },
+                      ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}

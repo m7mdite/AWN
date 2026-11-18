@@ -1,0 +1,190 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../controllers/auth_controllers/auth_controller.dart';
+import '../../utils/app_constants/app_theme_constants.dart';
+import '../../utils/app_constants/colors_constant.dart';
+import '../../utils/app_constants/app_images_constant.dart'; 
+import 'login_form.dart';
+import 'register_form.dart';
+
+class AuthScreen extends StatelessWidget {
+  final AuthController controller = Get.isRegistered<AuthController>()
+      ? Get.find<AuthController>()
+      : Get.put(AuthController());
+
+  AuthScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.transparent,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(AppImages.authBackground), // ✅ ثيم-أوير بدل "images/images_asnan/asnan6.jpeg"
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // === الشعار والنص العلوي ===
+              Container(
+                margin: const EdgeInsets.only(top: 20),
+                child: const Column(
+                  children: [
+                    SizedBox(height: 4),
+                  ],
+                ),
+              ),
+              // === أزرار التبويب ===
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                decoration: BoxDecoration(
+                  color: AppColors.white24,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Obx(
+                  () => Row(
+                    children: [
+                      _buildTabButton(
+                        label: "تسجيل الدخول",
+                        isActive: controller.currentPage.value == 0,
+                        onTap: () => controller.goToLogin(),
+                      ),
+                      _buildTabButton(
+                        label: "إنشاء حساب",
+                        isActive: controller.currentPage.value == 1,
+                        onTap: () => controller.goToRegister(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // === PageView مع أنيميشن ===
+              Expanded(
+                child: PageView(
+                  controller: controller.pageController,
+                  onPageChanged: (index) {
+                    controller.togglePage(index);
+                  },
+                  physics: const BouncingScrollPhysics(),
+                  children: const [
+                    LoginForm(),
+                    RegisterForm(),
+                  ],
+                ),
+              ),
+              // === زر تسجيل كضيف ===
+              Padding(
+                padding: const EdgeInsets.only(bottom: 24, left: 32, right: 32),
+                child: _buildGuestButton(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabButton({
+    required String label,
+    required bool isActive,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: isActive ? AppColors.white : AppColors.transparent,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: AppColors.black12,
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    )
+                  ]
+                : null,
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: isActive ? AppColors.primary700 : AppColors.white,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                fontSize: 14,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ===== زر تسجيل كضيف =====
+  Widget _buildGuestButton() {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      height: 50,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColors.white24, AppColors.white24],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: AppThemeConstants.borderRadius,
+        border: Border.all(
+          color: AppColors.white54,
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.white24,
+            blurRadius: 10,
+            spreadRadius: 1,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: () {
+          controller.loginAsGuest();
+        },
+        borderRadius: AppThemeConstants.borderRadius,
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.person_outline,
+              color: AppColors.white70,
+              size: 22,
+            ),
+            SizedBox(width: 10),
+            Text(
+              "الدخول كضيف",
+              style: TextStyle(
+                color: AppColors.white70,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(width: 6),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: AppColors.white54,
+              size: 14,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
