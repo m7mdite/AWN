@@ -1,3 +1,5 @@
+import '../../server_config.dart';
+
 class TreatmentRequestModel {
   String? sId;
   Patient? patient;
@@ -260,7 +262,7 @@ class Photo {
 
   Photo.fromJson(Map<String, dynamic> json) {
     publicId = json['publicId'];
-    url = json['url'];
+   url = ServerConfig.fixUrl(json['url']);
   }
 
   Map<String, dynamic> toJson() {

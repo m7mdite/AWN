@@ -1,14 +1,17 @@
-
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../controllers/public_controllers/unified_setting_controller.dart';
+import '../../../server_config.dart';
 import '../../../services/functions/upload_picture.dart';
+import '../../../services/notification/websocket_service.dart';
 import '../../../utils/app_constants/app_images_constant.dart';
 import '../../../utils/app_constants/colors_constant.dart';
+import '../../splash_screen.dart';
 import '../../widgets/build_developer_credit.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_icon_app_bar.dart';
@@ -17,6 +20,7 @@ import '../../widgets/dialog/submit_dialog.dart';
 import '../../widgets/theme_switcher_widget.dart';
 import '../chats/conversations_screen.dart';
 import '../notifications_view.dart';
+import '../server_setup_screen.dart';
 import 'change_password_screen.dart';
 import 'contact_admin_screen.dart';
 import 'privacy_policy_screen.dart';
@@ -98,14 +102,18 @@ class SettingScreen extends StatelessWidget {
                                 ],
                                 borderRadius: BorderRadius.circular(100),
                                 image: DecorationImage(
-                                  image: controller.profilePicture.value.isNotEmpty
-                                      ? NetworkImage(controller.profilePicture.value)
-                                          as ImageProvider
+                                  image:
+                                      controller.profilePicture.value.isNotEmpty
+                                      ? NetworkImage(
+                                          controller.profilePicture.value,
+                                        ) as ImageProvider
                                       : AssetImage(AppImages.authBackground),
                                   fit: BoxFit.cover,
                                 ),
                                 border: Border.all(
-                                    color: AppColors.primary, width: 2),
+                                  color: AppColors.primary,
+                                  width: 2,
+                                ),
                               ),
                             ),
                           ),
@@ -134,13 +142,18 @@ class SettingScreen extends StatelessWidget {
                             ),
                             if (controller.isVerified.value) ...[
                               const SizedBox(width: 8),
-                              Icon(Icons.star,
-                                  color: AppColors.primary, size: 20),
+                              Icon(
+                                Icons.star,
+                                color: AppColors.primary,
+                                size: 20,
+                              ),
                             ],
                             const SizedBox(width: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 2),
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: AppColors.primary100,
                                 borderRadius: BorderRadius.circular(12),
@@ -286,6 +299,21 @@ class SettingScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 30),
+                  // === 12. تغيير عنوان السيرفر ===
+                  const SizedBox(height: 20),
+                  _buildAnimatedItem(
+                    position: 11,
+                    child: Center(
+                      child: DefaultContainerProfile(
+                        color: AppColors.error,
+                        title: "تغيير عنوان السيرفر",
+                        icon: Icons.dns_rounded,
+                        onTap: _resetServer,
+                      ),
+                    ),
+                  ),
+                                    const SizedBox(height: 20),
+
                 ],
               ),
             );
@@ -296,12 +324,8 @@ class SettingScreen extends StatelessWidget {
   }
 
   // ===================== توقيع المطور =====================
-  
 
-  Widget _buildAnimatedItem({
-    required int position,
-    required Widget child,
-  }) {
+  Widget _buildAnimatedItem({required int position, required Widget child}) {
     return AnimationConfiguration.staggeredList(
       position: position,
       duration: const Duration(milliseconds: 600),
@@ -330,18 +354,42 @@ class SettingScreen extends StatelessWidget {
   //   );
   // }
   void _showThemeDialog() {
-  Get.dialog(
-    SubmitDialog(
-      title: "اختر الثيم",
-      question: "",
-      agreeBottontitle: "تم",
-      cancelBottonTitle: "إلغاء",
-      onTapSubmit: () => Get.back(),
-      onTapCansel: () {},
-      children: const [
-        ThemeSwitcherWidget(),
-      ],
-    ),
-  );
-}
+    Get.dialog(
+      SubmitDialog(
+        title: "اختر الثيم",
+        question: "",
+        agreeBottontitle: "تم",
+        cancelBottonTitle: "إلغاء",
+        onTapSubmit: () => Get.back(),
+        onTapCansel: () {},
+        children: const [ThemeSwitcherWidget()],
+      ),
+    );
+  }
+
+  void _resetServer() {
+    Get.dialog(
+      SubmitDialog(
+        title: "انتباه",
+        question: "سيتم حذف عنوان السيرفر المحفوظ وإعادة تشغيل التطبيق لإدخال عنوان جديد.\nمتابعة؟",
+        agreeBottontitle: "متابعة",
+        cancelBottonTitle: "إلغاء",
+        onTapCansel: () {},
+        onTapSubmit: () async {
+          Get.back(); // إغلاق الديالوج
+
+          // 1) حذف العنوان المحفوظ
+          await ServerConfig.reset();
+
+          // 2) إغلاق السوكيت القديم (متصل بالعنوان القديم)
+          if (Get.isRegistered<WebSocketService>()) {
+            await Get.delete<WebSocketService>(force: true);
+          }
+
+          // 3) فتح شاشة الإدخال وتفريغ كل الشاشات السابقة (يعادل إعادة التشغيل)
+          Get.offAll(() => ServerSetupScreen(next: () => const SplashScreen()));
+        },
+      ),
+    );
+  }
 }

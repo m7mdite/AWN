@@ -1,3 +1,5 @@
+import '../../server_config.dart';
+
 class ConversationModel {
   String? conversationId;
   OtherPartyProfile? otherPartyProfile;
@@ -73,7 +75,7 @@ class ProfilePhoto {
   ProfilePhoto({this.url});
 
   ProfilePhoto.fromJson(Map<String, dynamic> json) {
-    url = json['url'];
+    url = ServerConfig.fixUrl(json['url']);
   }
 
   Map<String, dynamic> toJson() {

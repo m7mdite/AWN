@@ -1,3 +1,5 @@
+import '../../server_config.dart';
+
 class MessageModel {
   final String id;
   // final String conversationId;
@@ -20,17 +22,18 @@ class MessageModel {
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> json) {
-    return MessageModel(
-      id: json['_id'] ?? json['id'],
-      // conversationId: json['conversationId'],
-      sender: json['sender'],
-      content: json['content'] ?? '',
-      messageType: json['message_type'] ?? 'text',
-      isRead: json['isRead'] ?? false,
-      createdAt: DateTime.parse(json['createdAt']),
-      isFromMe: json['is_from_me']?? true
-    );
-  }
+  final type = json['message_type'] ?? 'text';
+  final raw = json['content'] ?? '';
+  return MessageModel(
+    id: json['_id'] ?? json['id'],
+    sender: json['sender'],
+    content: type == 'text' ? raw : (ServerConfig.fixUrl(raw) ?? raw),
+    messageType: type,
+    isRead: json['isRead'] ?? false,
+    createdAt: DateTime.parse(json['createdAt']),
+    isFromMe: json['is_from_me'] ?? true,
+  );
+}
 
   Map<String, dynamic> toJson() => {
     '_id': id,

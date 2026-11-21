@@ -1,3 +1,5 @@
+import '../../server_config.dart';
+
 class PostModel {
   String? sId;
   String? content;
@@ -70,7 +72,7 @@ class Images {
   Images({this.url, this.publicId, this.sId});
 
   Images.fromJson(Map<String, dynamic> json) {
-    url = json['url'];
+    url = ServerConfig.fixUrl(json['url']);
     publicId = json['publicId'];
     sId = json['_id'];
   }
@@ -101,7 +103,8 @@ class Publisher {
   Publisher.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     fullName = json['full_name'];
-    profilePhoto = json['profile_photo'];
+    profilePhoto = ServerConfig.fixUrl(json['profile_photo']);  
+    
     gender = json['gender'];
     isVerified = json['is_verified'];
   }

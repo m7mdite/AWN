@@ -6,32 +6,30 @@ import 'app_route.dart';
 import 'bindings/general_binding.dart';
 import 'controllers/notifications_controllers/notification_controller.dart';
 import 'controllers/theme_controller.dart';
+import 'server_config.dart';
 import 'services/local_storge/local_user_storage.dart';
 import 'services/local_storge/secure_storage_service.dart';
 import 'services/remote/crud.dart';
-// import 'services/my_services.dart';
 import 'services/remote/public_remotes/unified_profile_remote.dart';
 import 'services/notification/websocket_service.dart';
 import 'services/session_service.dart';
-import 'core/network/server_discovery.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
+  await ServerConfig.load(); // لازم قبل أي شي بيستخدم ApiLink
+
   Get.put(SecureStorageService(), permanent: true);
   Get.put(LocalUserStorage(), permanent: true);
   Get.put(ThemeController(), permanent: true);
   Get.put(Crud(), permanent: true);
   Crud.onSessionExpired = SessionService.expireSession;
-
   Get.put(NotificationController(), permanent: true);
-  Get.put(WebSocketService(), permanent: true);
   Get.put(UnifiedProfileRemote(Get.find()), permanent: true);
-  try {
-    final server = await ServerDiscovery.testDiscovery();
-    debugPrint('SERVER DISCOVERED: $server');
-  } catch (e) {
-    debugPrint('SERVER DISCOVERY ERROR: $e');
-  }
+
+  // WebSocketService: شوف الملاحظة تحت
+  Get.put(WebSocketService(), permanent: true);
+
   runApp(const MyApp());
 }
 
@@ -41,15 +39,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ThemeController>(
-     
       builder: (_) {
         return GetMaterialApp(
-          locale: Locale('ar'),
+          locale: const Locale('ar'),
           initialBinding: GeneralBinding(),
-          initialRoute: AppRroute.splash,
-          getPages: routes,
           debugShowCheckedModeBanner: false,
           title: 'final',
+          getPages: routes,
+          // أول تشغيل: شاشة الإعداد. بعدها: splash العادي
+          initialRoute:
+              ServerConfig.isConfigured ? AppRroute.splash : '/server-setup',
         );
       },
     );

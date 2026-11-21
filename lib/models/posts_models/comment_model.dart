@@ -1,3 +1,5 @@
+import '../../server_config.dart';
+
 class CommentModel {
   String id;
   String content;
@@ -41,7 +43,7 @@ class CommentUser {
     return CommentUser(
       id: json['_id'] ?? '',
       fullName: json['full_name'] ?? '',
-      profilePhoto: json['profile_photo'] ,
+      profilePhoto: ServerConfig.fixUrl(json['profile_photo']),
       isVerified: json['is_verified'] ?? false,
     );
   }

@@ -132,6 +132,8 @@ class Crud {
   // GET
   // ============================================================
   Future<ApiResult> getData(String url, {Map<String, String>? header}) async {
+  print('➡️ GET $url');
+
     final headers = await _headers(extra: header);
     return _send(() => http.get(Uri.parse(url), headers: headers));
   }
