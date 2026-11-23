@@ -130,11 +130,12 @@ class StudentRequestsControllerImp extends StudentRequestsController {
       final result =
           await requestRemote.dunningOverseerData(data.toJson(), idR, idO);
       switch (result) {
-        case ApiSuccess(data: final body):
+                case ApiSuccess(data: final body):
           statusRequest = StatusRequest.success;
-          Get.snackbar("${body['status']}", "${body['message']}");
-          getPendingRequests();
-          Get.close(1);
+          Get.snackbar('تم', "${body['message']}");
+          await getProcessingRequest(); // القائمة اللي بتعرض المشرف
+                   Get.close(1);
+
         case ApiFailure(:final status, :final message):
           statusRequest = status;
           Get.snackbar('خطأ', message ?? 'تعذر تعيين المشرف');
@@ -152,8 +153,8 @@ class StudentRequestsControllerImp extends StudentRequestsController {
     Get.dialog(StudentDunningRequest(requestModel: requestModel));
   }
 
-  void showOnedRequest(TreatmentRequestModel requestModel) {
-    getOverSeer(requestModel.courseInfo!.sId ?? "");
+  Future<void> showOnedRequest(TreatmentRequestModel requestModel) async {
+    await getOverSeer(requestModel.courseInfo!.sId ?? "");
     Get.dialog(
       ShowRequest(
         requestModel: requestModel,

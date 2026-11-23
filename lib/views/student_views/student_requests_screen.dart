@@ -14,7 +14,7 @@ import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_icon_app_bar.dart';
 import '../widgets/custom_photo_app_bar.dart';
 import '../widgets/default_no_data.dart';
-import '../widgets/requests/card_request_processing.dart';
+import '../widgets/requests/request_card.dart';
 
 class StudentRequestsScreen extends StatelessWidget {
   final StudentRequestsControllerImp controller =
@@ -33,7 +33,7 @@ class StudentRequestsScreen extends StatelessWidget {
             return Scaffold(
               backgroundColor: AppColors.background, 
               appBar: CustomAppBar(
-                title: "طلبات المعالجة",titleSize: 18,
+                title: "طلبات المعالجة",titleSize: 14,
                 automaticallyImplyLeading: false,
                 actions: [
                   CustomIconAppBar(
@@ -101,7 +101,7 @@ class StudentRequestsScreen extends StatelessWidget {
                           if (index == controller.pendingRequests.length) {
                             return const SizedBox(height: 100);
                           }
-                          return CardRequestProcessing(
+                          return RequestCard(
                             requestModel: controller.pendingRequests[index],
                             onTap: () {
                               controller.showRequest(

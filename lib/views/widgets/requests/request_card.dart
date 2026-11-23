@@ -9,15 +9,16 @@ import '../../../utils/app_constants/app_images_constant.dart';
 import '../../../utils/app_constants/colors_constant.dart';
 import '../../../utils/app_constants/tooth_chart_data.dart';
 import '../../../utils/app_constants/tooth_constants.dart';
+import 'case_progress_strip.dart';
 
-class CardRequestProcessing extends StatelessWidget {
+class RequestCard extends StatelessWidget {
   final TreatmentRequestModel requestModel;
   final Map? toothLocation = ToothConstants.toothLocationMap;
   final UnifiedSettingController settingController =
       Get.find<UnifiedSettingController>();
   final void Function()? onTap;
 
-  CardRequestProcessing({super.key, required this.requestModel, this.onTap});
+  RequestCard({super.key, required this.requestModel, this.onTap});
 
   // ✅ لون الـ divider والخلفية الداخلية حسب الثيم
   Color get _innerBg => AppColors.cardColor;
@@ -197,6 +198,8 @@ class CardRequestProcessing extends StatelessWidget {
                 ),
 
                 Divider(color: _dividerColor, height: 8), // ✅
+                                CaseProgressStrip(requestModel: requestModel),
+
                 // ===== تنبيه المشرف =====
                 if (requestModel.overseer == null &&
                     requestModel.status == "processing" &&

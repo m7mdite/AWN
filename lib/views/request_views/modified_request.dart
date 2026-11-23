@@ -11,7 +11,7 @@ import '../../utils/app_constants/colors_constant.dart';
 import '../widgets/botton_controller.dart';
 import '../widgets/prediction_light_button.dart';
 import '../widgets/select_one_option.dart';
-import '../widgets/tooth_chart.dart';
+import '../widgets/tooth_picker_field.dart';
 
 class ModifiedRequest extends StatelessWidget {
   final FillRequestControllerImp controller = Get.put(
@@ -428,12 +428,8 @@ class ModifiedRequest extends StatelessWidget {
                   //   },
                   // ),
 
-                  Text(
-                    "اضغط على السن المراد معالجته في المخطط",
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 10),
-                  ToothChart(
+                  // زر اختيار السن: يفتح نافذة فيها المخطط بدل عرضه داخل النموذج
+                  ToothPickerField(
                     selected: controller
                         .treatmentRequestModel
                         .requestion!
@@ -445,23 +441,8 @@ class ModifiedRequest extends StatelessWidget {
                               .treatmentRequestModel
                               .requestion!
                               .toothLocation =
-                          v ?? '';
+                          v;
                       controller.update();
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  RowContainerWithTitle(
-                    title: "رقم السن :  ",
-                    text: controller
-                        .treatmentRequestModel
-                        .requestion!
-                        .toothLocation,
-                    onChanged: (p0) {
-                      controller
-                              .treatmentRequestModel
-                              .requestion!
-                              .toothLocation =
-                          p0;
                     },
                   ),
 
@@ -502,6 +483,21 @@ class ModifiedRequest extends StatelessWidget {
                                 size: 80,
                               ),
                       ),
+                    ),
+                  ),
+                  BreakContainer(),
+                  CheckboxListTile(
+                    value: controller.treatmentRequestModel.requestion!.allowPortfolio ?? false,
+                    onChanged: (v) {
+                      controller.treatmentRequestModel.requestion!.allowPortfolio = v ?? false;
+                      controller.update();
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    title: const Text(
+                      "أوافق على عرض صور حالتي (قبل وبعد المعالجة) ضمن معرض الطالب والمشرف، دون ذكر اسمي",
+                      style: TextStyle(fontSize: 12),
                     ),
                   ),
                   BreakContainer(),
@@ -930,3 +926,4 @@ class BreakContainer extends StatelessWidget {
     );
   }
 }
+

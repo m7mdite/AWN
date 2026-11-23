@@ -5,7 +5,7 @@ import '../../utils/app_constants/colors_constant.dart';
 import '../../utils/app_constants/status_request.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/default_no_data.dart';
-import '../widgets/requests/card_request_processing.dart';
+import '../widgets/requests/request_card.dart';
 import '../widgets/requests/show_request.dart';
 
 class ShowOwnedStudentRequest extends StatelessWidget {
@@ -78,7 +78,7 @@ class ShowOwnedStudentRequest extends StatelessWidget {
                               padding: const EdgeInsets.only(bottom: 16),
                               itemCount: controller.processingRequests.length,
                               itemBuilder: (context, index) {
-                                return CardRequestProcessing(
+                                return RequestCard(
                                   requestModel: controller.processingRequests[index],
                                   onTap: () {
                                     controller.showOnedRequest(
@@ -103,7 +103,7 @@ class ShowOwnedStudentRequest extends StatelessWidget {
                               padding: const EdgeInsets.only(bottom: 16),
                               itemCount: controller.completedRequests.length,
                               itemBuilder: (context, index) {
-                                return CardRequestProcessing(
+                                return RequestCard(
                                   requestModel: controller.completedRequests[index],
                                   onTap: () {
                                     Get.dialog(

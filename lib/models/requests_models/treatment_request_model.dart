@@ -1,6 +1,12 @@
 import '../../server_config.dart';
+import 'case_photos_model.dart';
+import 'appointment_model.dart';
 
 class TreatmentRequestModel {
+   CasePhotos? photos;
+  RetakeRequest? retakeRequest;
+  AppointmentInfo? appointment;
+
   String? sId;
   Patient? patient;
   String? status;
@@ -20,6 +26,8 @@ class TreatmentRequestModel {
   TreatmentRequestModel({
     this.sId,
     this.patient,
+        this.appointment,
+
     this.status,
     this.requestion,
     this.overseer,
@@ -29,6 +37,8 @@ class TreatmentRequestModel {
     this.stageEvaluations,
     this.courseInfo,
     this.courseInfoAlt,
+    this.photos,
+    this.retakeRequest,
     this.caseTypeId,
     this.rating, // إضافة خاصية التقييم
     this.feedback, // إضافة خاصية التعليقات
@@ -39,6 +49,10 @@ class TreatmentRequestModel {
 
     return TreatmentRequestModel(
       sId: json['_id'],
+      photos: json['photos'] is Map ? CasePhotos.fromJson(json['photos'] as Map) : null,
+      retakeRequest: RetakeRequest.tryParse(json['retake_request']),
+      appointment: AppointmentInfo.tryParse(json['appointment']),
+
       rating: json['rating'], // إضافة خاصية التقييم
       feedback: json['feedback'], // إضافة خاصية التعليقات
       // patient - موجود في كلا النوعين
@@ -185,6 +199,7 @@ class Patient {
 }
 
 class Requestion {
+  bool? allowPortfolio;
   int? painSeverity;
   String? painTime;
   String? toothLocation;
@@ -200,6 +215,7 @@ class Requestion {
   String? updatedAt;
 
   Requestion({
+    
     this.painSeverity,
     this.painTime,
     this.toothLocation,
@@ -216,6 +232,8 @@ class Requestion {
   });
 
   Requestion.fromJson(Map<String, dynamic> json) {
+        allowPortfolio = json['allow_portfolio'] == true;
+
     painSeverity = json['pain_severity'];
     painTime = json['pain_time'];
     toothLocation = json['tooth_location'];

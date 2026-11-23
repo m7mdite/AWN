@@ -14,7 +14,7 @@ import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_icon_app_bar.dart';
 import '../widgets/custom_photo_app_bar.dart';
 import '../widgets/default_no_data.dart';
-import '../widgets/requests/card_request_processing.dart';
+import '../widgets/requests/request_card.dart';
 import 'dialog_request/dialog_send_request.dart';
 
 /// أسماء التبويبات الأربعة، بنفس ترتيب الـ PageView (0..3)
@@ -167,7 +167,7 @@ class PatientRequestScreen extends StatelessWidget {
         if (index == requests.length) {
           return const SizedBox(height: 60);
         }
-        return CardRequestProcessing(
+        return RequestCard(
           requestModel: requests[index],
           onTap: () => _onRequestTap(tab, index),
         );

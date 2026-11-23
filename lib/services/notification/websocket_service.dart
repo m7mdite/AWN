@@ -9,6 +9,7 @@ import 'package:get_storage/get_storage.dart';
 import '../../api_link.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import '../../controllers/student_controllers/student_requests_controller.dart';
 
 import '../../controllers/conversations_controllers/chat_controller.dart';
 import '../../controllers/conversations_controllers/conversations_controller.dart';
@@ -369,6 +370,10 @@ io.Socket? _socket;
       title: 'تحديث نوع الحالة',
       body: (data is Map ? data['message'] : null) ?? 'تم تحديث نوع الحالة',
     );
+    // حتى يظهر للطالب زر "تعيين مشرف" مباشرة بدون إعادة فتح الصفحة
+    if (Get.isRegistered<StudentRequestsControllerImp>()) {
+      Get.find<StudentRequestsControllerImp>().getProcessingRequest();
+    }
   }
 
   Future<void> _handleNewMessage(dynamic data) async {

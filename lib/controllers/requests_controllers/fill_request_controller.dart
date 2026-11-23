@@ -133,6 +133,7 @@ final ValueNotifier<String?> ageNotifier = ValueNotifier(null);
     statusRequest = StatusRequest.loading;
 
     try {
+      formData['allow_portfolio'] = treatmentRequestModel.requestion?.allowPortfolio ?? false;
       final result = await requestData.sendRequestData(formData, image);
       switch (result) {
         case ApiSuccess():
@@ -408,6 +409,7 @@ final ValueNotifier<String?> ageNotifier = ValueNotifier(null);
     statusRequest = StatusRequest.loading;
 
     try {
+       formData['allow_portfolio'] = treatmentRequestModel.requestion?.allowPortfolio ?? false;
       final result = await requestData.updateRequestData(formData, image, id);
       switch (result) {
         case ApiSuccess():
